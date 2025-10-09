@@ -8,11 +8,11 @@ interface Thumbnail {
   imageUrl: string;
 }
 
-export default function EvolvingPage() {
-  const [activeIndex, setActiveIndex] = useState(0);
+export default function EvolvingPageClient() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isClient, setIsClient] = useState(false);
 
-  // Section 2 main video state
   const [passengerMainVideo, setPassengerMainVideo] = useState("/passenger_main.mp4");
   const passengerThumbnails: Thumbnail[] = [
     { id: 1, url: "/passenger_main.mp4", imageUrl: "/completeBody.png" },
@@ -22,7 +22,6 @@ export default function EvolvingPage() {
     { id: 5, url: "/exterior_v.mp4", imageUrl: "/exterior.png" },
   ];
 
-  // Section 3 main video state
   const [commercialMainVideo, setCommercialMainVideo] = useState("/commercial_main.mp4");
   const commercialThumbnails: Thumbnail[] = [
     { id: 1, url: "/commercial_main.mp4", imageUrl: "/first.png" },
@@ -30,8 +29,15 @@ export default function EvolvingPage() {
     { id: 3, url: "/Commercial-Cabin.mp4", imageUrl: "/third.png" },
   ];
 
-  // Detect active section (client-side only)
+  // Only run on client
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Scroll handling (client only)
+  useEffect(() => {
+    if (!isClient) return;
+
     const handleScroll = () => {
       if (!containerRef.current) return;
       const sections = containerRef.current.querySelectorAll(".section");
@@ -47,7 +53,7 @@ export default function EvolvingPage() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isClient]);
 
   return (
     <div
@@ -86,12 +92,9 @@ export default function EvolvingPage() {
                 onClick={() => setPassengerMainVideo(thumb.url)}
                 className="w-1/5 h-20 cursor-pointer flex-shrink-0 transform transition hover:scale-105 relative"
               >
-                <Image
-                  src={thumb.imageUrl}
-                  alt={`Thumbnail ${thumb.id}`}
-                  fill
-                  className="object-cover rounded-lg"
-                />
+                {isClient && (
+                  <Image src={thumb.imageUrl} alt={`Thumbnail ${thumb.id}`} fill className="object-cover rounded-lg" />
+                )}
               </div>
             ))}
           </div>
@@ -122,12 +125,9 @@ export default function EvolvingPage() {
                 onClick={() => setCommercialMainVideo(thumb.url)}
                 className="w-1/3 h-20 cursor-pointer flex-shrink-0 transform transition hover:scale-105 relative"
               >
-                <Image
-                  src={thumb.imageUrl}
-                  alt={`Thumbnail ${thumb.id}`}
-                  fill
-                  className="object-cover rounded-lg"
-                />
+                {isClient && (
+                  <Image src={thumb.imageUrl} alt={`Thumbnail ${thumb.id}`} fill className="object-cover rounded-lg" />
+                )}
               </div>
             ))}
           </div>
